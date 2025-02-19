@@ -1,69 +1,64 @@
-from agno.agent import Agent
+from agno.agent import Agent, RunResponse
 from agno.models.groq import Groq
+from pydantic import BaseModel, Field
+from typing import List
+from rich.pretty import pprint
 from agno.tools.duckduckgo import DuckDuckGoTools
 
-# Define all four agents
+class AgentResponseStructure(BaseModel):
+    satisfied: bool = Field(default=False, description="If you have already asked 4 questions and gotten the answers from the candidate as well, only then return True.")
+    agentResponse: str = Field(description="Short response for the prompt the candidate gives")
+
 tech_agent = Agent(
     model=Groq(id="llama-3.3-70b-versatile"),
-    description="You are a Tech Interviewing Bot conducting a technical interview. Maintain a professional and authoritative tone. Always stay in character and address the candidate with respect.",
-    tools=[DuckDuckGoTools()],
-    show_tool_calls=True,
+    instructions="you are a tech interviewer, speak like one. You will be interviewing a candidate for a tech role.",
+    expected_output="Give output in an oral conversational manner. Avoid using long sentences.",
+    add_history_to_messages=True,
+    num_history_responses= 5,
+    response_model=AgentResponseStructure,
     markdown=True
 )
 
 soft_skills_agent = Agent(
     model=Groq(id="llama-3.3-70b-versatile"),
-    description="I am the Cultural Fit Interviewing Bot. Let's see if you align with our company culture.",
-    tools=[DuckDuckGoTools()],
+    description="I am the Soft Skills Interviewing Bot. I evaluate communication and leadership skills.",
     show_tool_calls=True,
+    response_model=AgentResponseStructure,
     markdown=True
 )
 
 cult_fit_agent = Agent(
     model=Groq(id="llama-3.3-70b-versatile"),
-    description="You are a Cultural Fit Interviewing Bot evaluating alignment with company values. Keep a professional and authoritative demeanor. Stay in character and interact with the candidate accordingly.",
-    tools=[DuckDuckGoTools()],
-    show_tool_calls=True,
+    response_model=AgentResponseStructure,
+    description="I am the Cultural Fit Interviewing Bot. Let's see if you align with our company culture.",
     markdown=True
 )
 
 aptitude_agent = Agent(
     model=Groq(id="llama-3.3-70b-versatile"),
-    description="You are an Aptitude Interviewing Bot testing logical reasoning and problem-solving skills. Maintain a formal and authoritative tone. Always remain in character during the interview.",
-    tools=[DuckDuckGoTools()],
-    show_tool_calls=True,
+    response_model=AgentResponseStructure,
+    description="I am the Aptitude Interviewing Bot. I test logical reasoning and problem-solving skills.",
     markdown=True
 )
 
-# List of agents
 agents = [tech_agent, soft_skills_agent, cult_fit_agent, aptitude_agent]
+
+def chat_with_agent(agent):
+    while True:
+        user_message = input("\nYour response: ")
+        response = agent.run(user_message)
+        print("\nAgent:", response.content.agentResponse)
+        
+        if response.content.satisfied:
+            print("\nAgent is satisfied. Moving to the next section...")
+            break  
 
 def interview_workflow():
     print("\nWelcome to the Multi-Agent Interview System!\n")
-    total_questions_per_agent = 5
 
     for agent in agents:
-        print(f"\n{agent.description}\n")
-        
-        question_count = 0
-        while question_count < total_questions_per_agent:
-            # Agent asks a question
-            agent.print_response("Ask the next interview question.", stream=True)
-            question_count += 1
-            
-            while True:
-                user_input = input("\nYour response: ")
-
-                if user_input.lower() in ["exit", "quit"]:
-                    print("\nExiting interview...")
-                    return
-                
-                # Agent processes the response and decides whether to follow up or proceed
-                agent.print_response(user_input, stream=True)
-                
-                follow_up = input("\nDo you have a follow-up question? (yes/no): ").strip().lower()
-                if follow_up == "no":
-                    break
+        print('Interview Section')
+        chat_with_agent(agent)
 
     print("\nInterview completed. Thank you!\n")
 

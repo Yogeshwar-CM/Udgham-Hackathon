@@ -1,0 +1,73 @@
+body {
+  background: #010211;
+  margin: auto;
+  height: 100vh;
+  color: white;
+  width: 96vw;
+}
+html {
+  border: 1px solid #e3fafa;
+  height: 99vh;
+}
+.head {
+  display: flex;
+  border-bottom: 1px solid #e3fafa;
+  align-items: center;
+  justify-content: space-between;
+}
+.head img {
+  height: 2.4rem;
+}
+.frames {
+  display: flex;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+.rect {
+  width: 20rem;
+  display: flex;
+  border-radius: 0.4rem;
+  justify-content: center;
+  align-items: center;
+  height: 14rem;
+  background: #231a60;
+}
+.rect img {
+  width: 44%;
+  border-radius: 1000rem;
+}
+.frame2 {
+  display: flex;
+  margin-top: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+#camera {
+  height: 18rem;
+  border-radius: 0.4rem;
+  background: black;
+}
+.lower {
+  display: flex;
+  color: white;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+.upload button {
+  background: none;
+  padding: 2rem 4rem;
+  border: 1px solid #e3fafa;
+  color: white;
+  border-radius: 0.4rem;
+}
+
+input[type="text"] {
+  background: none;
+  border: none;
+  padding: 2rem 2rem;
+  border: 1px solid #e3fafa;
+  color: white;
+  font-size: 0.75rem;
+  width: 62%;
+}
